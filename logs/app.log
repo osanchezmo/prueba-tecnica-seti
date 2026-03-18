@@ -1,0 +1,9 @@
+2026-03-18T17:13:46.130-05:00  WARN 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-1] c.b.p.exception.GlobalExceptionHandler   : Solicitud inválida: No tiene permisos para realizar esta operación sobre otro cliente
+2026-03-18T17:13:55.667-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.controller.FondoController         : Solicitud de suscripción recibida - Cliente: 69bb22929d04fd3211d76b07, Fondo: 1
+2026-03-18T17:13:55.668-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.service.FondoServiceImpl           : Procesando suscripción de fondo - Cliente: 69bb22929d04fd3211d76b07, Fondo: 1
+2026-03-18T17:13:55.679-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.service.NotificationServiceImpl    : Enviando notificación de suscripción para cliente: 69bb22929d04fd3211d76b07, fondo: FPV_BTG_PACTUAL_RECAUDADORA
+2026-03-18T17:13:55.679-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.utils.EnviarEmail                  : Enviando email a: juan@test.com
+2026-03-18T17:13:59.133-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.utils.EnviarEmail                  : Email enviado exitosamente a: juan@test.com
+2026-03-18T17:13:59.134-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.service.NotificationServiceImpl    : Notificación enviada exitosamente
+2026-03-18T17:14:07.274-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-5] c.b.p.controller.ClienteController       : Solicitud de historial de transacciones para cliente: 69bb22929d04fd3211d76b07
+2026-03-18T17:14:07.275-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-5] c.b.p.service.FondoServiceImpl           : Obteniendo historial de transacciones para cliente: 69bb22929d04fd3211d76b07

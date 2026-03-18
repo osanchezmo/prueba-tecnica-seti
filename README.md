@@ -75,17 +75,43 @@ A continuación, se presentan las funcionalidades del sistema, las reglas de neg
 
 A continuación, se listan los endpoints principales disponibles en esta aplicación, junto con una breve descripción de su funcionalidad.
 
+##### 🔐 Autenticación (/api/auth)
+| Método |  Endpoint  |                         Descripción                          |
+|:------:|:----------:|:------------------------------------------------------------:|
+|  POST  |  /login    | Autentica con email y contraseña, retorna JWT Bearer token   |
+
 ##### 🔗 Clientes (/api/clientes)
 | Método |          Endpoint          |                         Descripción                          |
 |:------:|:--------------------------:|:------------------------------------------------------------:|
-|  POST  |             /              |   Crea un nuevo cliente con saldo inicial de $500.000 COP    |
-|  GET   | /transacciones/{clienteId} | Obtiene el historial completo de transacciones de un cliente | 
+|  POST  |             /              |   Crea un nuevo cliente con saldo inicial de $500.000 COP (público)    |
+|  GET   | /{clienteId}/transacciones | Obtiene el historial de transacciones (requiere autenticación) | 
 
 ##### 🔗 Fondos (/api/fondos)
 | Método |            Endpoint            |                                Descripción                                |
 |:------:|:------------------------------:|:-------------------------------------------------------------------------:|
-|  POST  |           /suscribir           |         Permite a un cliente suscribirse a un fondo de inversión          |
-|  GET   |           /cancelar            | Permite cancelar la suscripción a un fondo y devuelve el monto al cliente |
+|  POST  |           /suscribir           |         Suscribirse a un fondo (requiere autenticación)                   |
+|  POST  |           /cancelar            | Cancelar suscripción a un fondo (requiere autenticación)                  |
+
+#### 🔒 Autenticación, Autorización y Roles
+
+La API implementa **autenticación JWT**, **autorización por roles** y **encriptación de contraseñas** (BCrypt):
+
+- **CLIENTE**: Solo puede gestionar sus propios datos (suscribirse, cancelar, ver su historial).
+- **ADMIN**: Puede operar sobre cualquier cliente.
+
+**Flujo de uso:**
+1. Registrar cliente: `POST /api/clientes` con `password` (mínimo 6 caracteres).
+2. Iniciar sesión: `POST /api/auth/login` con `email` y `password`.
+3. Usar el token en las peticiones: `Authorization: Bearer <token>`.
+
+#### 📮 Colección Postman
+
+Se incluye una colección de Postman para ejecutar todos los endpoints:
+
+- **Ubicación:** `BTG_Fondos_API.postman_collection.json`
+- **Importar:** En Postman → File → Import → seleccionar el archivo JSON
+- **Variables:** `baseUrl` (http://localhost:8080), `token` y `clienteId` se actualizan automáticamente
+- **Flujo completo:** La carpeta "Flujo completo (Runner)" permite ejecutar todo el flujo con Collection Runner
 
 #### ⚙️ Configuracion de notificaciones
 

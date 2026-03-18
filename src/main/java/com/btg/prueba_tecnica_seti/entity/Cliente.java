@@ -1,6 +1,7 @@
 package com.btg.prueba_tecnica_seti.entity;
 
 import com.btg.prueba_tecnica_seti.enums.PreferenciaNotificacion;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,6 +34,10 @@ public class Cliente {
 
     @Field("telefono")
     private String telefono;
+
+    @JsonIgnore
+    @Field("password")
+    private String password;
 
     @Field("saldo_disponible")
     private BigDecimal saldoDisponible;

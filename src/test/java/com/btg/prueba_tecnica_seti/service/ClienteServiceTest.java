@@ -12,7 +12,10 @@ import com.btg.prueba_tecnica_seti.utils.Util;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -25,9 +28,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig({ ClienteServiceImpl.class, Util.class})
+@SpringJUnitConfig(classes = {ClienteServiceImpl.class, Util.class, ClienteServiceTest.TestSecurityConfig.class})
 @Import({MapperConfig.class})
 public class ClienteServiceTest {
+
+    @Configuration
+    static class TestSecurityConfig {
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+            return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
+        }
+    }
 
     @MockitoBean
     private ClienteRepository clienteRepository;
@@ -48,7 +59,7 @@ public class ClienteServiceTest {
         clienteRequest.setEmail("juan.perez@test.com");
         clienteRequest.setTelefono("3001234567");
         clienteRequest.setPreferenciaNotificacion("EMAIL");
-
+        clienteRequest.setPassword("123456");
 
         cliente = new Cliente();
         cliente.setId("1");

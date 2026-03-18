@@ -3,6 +3,7 @@ package com.btg.prueba_tecnica_seti.controller;
 import com.btg.prueba_tecnica_seti.dto.ApiResponse;
 import com.btg.prueba_tecnica_seti.dto.FondoSuscripcionCancelacionRequest;
 import com.btg.prueba_tecnica_seti.dto.TransaccionResponse;
+import com.btg.prueba_tecnica_seti.security.SecurityUtils;
 import com.btg.prueba_tecnica_seti.service.impl.FondoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,13 +28,15 @@ public class FondoController {
     private final FondoService fondoService;
 
     @PostMapping("/suscribir")
-    @Operation(summary = "Suscribirse a un fondo", description = "Permite a un cliente suscribirse a un fondo de inversión")
+    @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
+    @Operation(summary = "Suscribirse a un fondo", description = "Permite a un cliente suscribirse a un fondo. CLIENTE solo puede suscribirse a sí mismo.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Suscripción exitosa"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Saldo insuficiente o datos inválidos"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Cliente o fondo no encontrado")
     })
     public ResponseEntity<ApiResponse<TransaccionResponse>> suscribirFondo(@Valid @RequestBody FondoSuscripcionCancelacionRequest request) {
+        SecurityUtils.validarAccesoCliente(request.getClienteId());
         log.info("Solicitud de suscripción recibida - Cliente: {}, Fondo: {}",
                 request.getClienteId(), request.getFondoId());
 
@@ -41,13 +45,15 @@ public class FondoController {
     }
 
     @PostMapping("/cancelar")
-    @Operation(summary = "Cancelar suscripción a un fondo", description = "Permite cancelar la suscripción a un fondo y devuelve el monto al cliente")
+    @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
+    @Operation(summary = "Cancelar suscripción a un fondo", description = "Permite cancelar la suscripción a un fondo. CLIENTE solo puede cancelar sus propias suscripciones.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Cancelación exitosa"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "El cliente no está suscrito al fondo"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Cliente o fondo no encontrado")
     })
     public ResponseEntity<ApiResponse<TransaccionResponse>> cancelarSuscripcion(@Valid @RequestBody FondoSuscripcionCancelacionRequest request) {
+        SecurityUtils.validarAccesoCliente(request.getClienteId());
         log.info("Solicitud de cancelación recibida - Cliente: {}, Fondo: {}",
                 request.getClienteId(), request.getFondoId());
 

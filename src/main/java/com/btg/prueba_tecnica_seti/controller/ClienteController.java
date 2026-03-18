@@ -4,6 +4,7 @@ import com.btg.prueba_tecnica_seti.dto.ApiResponse;
 import com.btg.prueba_tecnica_seti.dto.ClienteRequest;
 import com.btg.prueba_tecnica_seti.dto.ClienteResponse;
 import com.btg.prueba_tecnica_seti.dto.TransaccionResponse;
+import com.btg.prueba_tecnica_seti.security.SecurityUtils;
 import com.btg.prueba_tecnica_seti.service.impl.ClienteService;
 import com.btg.prueba_tecnica_seti.service.impl.FondoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,14 +49,17 @@ public class ClienteController {
 
 
     @GetMapping("/{clienteId}/transacciones")
-    @Operation(summary = "Obtener historial de transacciones", description = "Obtiene el historial completo de transacciones de un cliente")
+    @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
+    @Operation(summary = "Obtener historial de transacciones", description = "Obtiene el historial completo de transacciones de un cliente. CLIENTE solo puede ver sus propias transacciones.")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Historial obtenido exitosamente"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Sin permisos para acceder a este recurso"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Cliente no encontrado")
     })
     public ResponseEntity<ApiResponse<List<TransaccionResponse>>> obtenerHistorialTransacciones(
             @Parameter(description = "ID del cliente") @PathVariable String clienteId) {
 
+        SecurityUtils.validarAccesoCliente(clienteId);
         log.info("Solicitud de historial de transacciones para cliente: {}", clienteId);
 
         List<TransaccionResponse> transacciones = fondoService.obtenerHistorialTransacciones(clienteId);

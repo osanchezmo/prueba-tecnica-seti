@@ -10,7 +10,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -18,8 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 
@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 public class ClienteControllerTest {
 
     @MockitoBean
@@ -42,18 +43,12 @@ public class ClienteControllerTest {
     private SmsInfobip smsInfobip;
 
     @Autowired
-    private WebApplicationContext webApplicationContext;
+    private MockMvc mockMvc;
 
     @Autowired
     private ClienteRepository clienteRepository;
 
-    private MockMvc mockMvc;
     private String baseUrl = "/api/clientes";
-
-    @BeforeEach
-    public void setUp() {
-        mockMvc  = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    }
 
     @Test
     void crearCliente_DeberiaLanzarExcepcionSiNotificacionNoExiste() throws Exception {
@@ -66,6 +61,7 @@ public class ClienteControllerTest {
                 "    \"nombre\": \"Oscar Sanchez\",\n" +
                 "    \"email\": \"hola@gmail.com\",\n" +
                 "    \"telefono\": \"s1234\",\n" +
+                "    \"password\": \"123456\",\n" +
                 "    \"preferenciaNotificacion\": \"WhatsApp\"\n" +
                 "}";
 
@@ -87,6 +83,7 @@ public class ClienteControllerTest {
                 "    \"nombre\": \"Oscar Sanchez\",\n" +
                 "    \"email\": \"hola@gmail.com\",\n" +
                 "    \"telefono\": \"s1234\",\n" +
+                "    \"password\": \"123456\",\n" +
                 "    \"preferenciaNotificacion\": \"Email\"\n" +
                 "}";
 
@@ -123,6 +120,7 @@ public class ClienteControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void obtenerHistorialTransacciones_DeberiaLanzarExcepcionSiClienteNoExiste() throws Exception {
         clienteRepository.deleteAll();
 
@@ -136,16 +134,17 @@ public class ClienteControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void obtenerHistorialTransacciones_DeberiaLanzarTransaccionesVacias() throws Exception {
         clienteRepository.deleteAll();
 
         clienteRepository.save(Cliente
                 .builder()
-                        .id("1")
+                .id("1")
                 .email("hola@gmail.com")
-                //.roles(Set.of(Roles.CLIENTE.name()))
                 .nombre("Oscar")
                 .telefono("1234")
+                .password("$2a$10$dummyEncodedPasswordForTest")
                 .saldoDisponible(Constantes.SALDO_INICIAL_CLIENTE)
                 .fondosSuscritos(new ArrayList<>())
                 .build());

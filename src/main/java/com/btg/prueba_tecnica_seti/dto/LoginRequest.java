@@ -2,8 +2,6 @@ package com.btg.prueba_tecnica_seti.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,22 +11,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClienteRequest {
-
-    @NotBlank(message = "El nombre es obligatorio")
-    private String nombre;
+public class LoginRequest {
 
     @Email(message = "El email debe tener un formato válido")
     @NotBlank(message = "El email es obligatorio")
     private String email;
 
-    @NotBlank(message = "El teléfono es obligatorio")
-    private String telefono;
-
     @NotBlank(message = "La contraseña es obligatoria")
-    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String password;
-
-    @NotNull(message = "La preferencia de notificación es obligatoria")
-    private String preferenciaNotificacion;
 }

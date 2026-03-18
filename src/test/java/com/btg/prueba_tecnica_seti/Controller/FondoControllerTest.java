@@ -8,10 +8,11 @@ import com.btg.prueba_tecnica_seti.service.impl.NotificationService;
 import com.btg.prueba_tecnica_seti.utils.Constantes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -19,9 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 public class FondoControllerTest {
 
     @MockitoBean
@@ -51,18 +50,12 @@ public class FondoControllerTest {
     private TransaccionRepository transaccionRepository;
 
     @Autowired
-    private WebApplicationContext webApplicationContext;
-
     private MockMvc mockMvc;
+
     private String baseUrl = "/api/fondos";
 
-
-    @BeforeEach
-    public void setUp() {
-        mockMvc  = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    }
-
     @Test
+    @WithMockUser(roles = "ADMIN")
     void suscribirFondo_DeberiaLanzarExcepcionSiClienteNoExiste() throws Exception {
 
         clienteRepository.deleteAll();
@@ -83,6 +76,7 @@ public class FondoControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void suscribirFondo_DeberiaLanzarExcepcionSiFondoNoExist() throws Exception {
 
         String expectedResponse = "{\"success\":false,\"message\":\"Fondo no encontrado\",\"data\":null}";
@@ -96,9 +90,9 @@ public class FondoControllerTest {
                 .builder()
                 .id("1")
                 .email("hola@gmail.com")
-                //.roles(Set.of(Roles.CLIENTE.name()))
                 .nombre("Oscar")
                 .telefono("1234")
+                .password("$2a$10$dummy")
                 .saldoDisponible(Constantes.SALDO_INICIAL_CLIENTE)
                 .fondosSuscritos(new ArrayList<>())
                 .build());
@@ -112,6 +106,7 @@ public class FondoControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void suscribirFondo_DeberiaLanzarExcepcionSiClienteYaEstaSuscritoAlFondo() throws Exception {
 
         String expectedResponse = "{\"success\":false,\"message\":\"El cliente ya está suscrito a este fondo\",\"data\":null}";
@@ -125,7 +120,6 @@ public class FondoControllerTest {
                 .builder()
                 .id("1")
                 .email("hola@gmail.com")
-                //.roles(Set.of(Roles.CLIENTE.name()))
                 .nombre("Oscar")
                 .telefono("1234")
                 .saldoDisponible(Constantes.SALDO_INICIAL_CLIENTE)
@@ -141,6 +135,7 @@ public class FondoControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void suscribirFondo_DeberiaLanzarExcepcionSiClienteNotieneSaldoDisponible() throws Exception {
 
         String expectedResponse = "{\"success\":false,\"message\":\"No tiene saldo disponible para vincularse al fondo FPV_BTG_PACTUAL_RECAUDADORA\",\"data\":null}";
@@ -154,9 +149,9 @@ public class FondoControllerTest {
                 .builder()
                 .id("1")
                 .email("hola@gmail.com")
-                //.roles(Set.of(Roles.CLIENTE.name()))
                 .nombre("Oscar")
                 .telefono("1234")
+                .password("$2a$10$dummy")
                 .saldoDisponible(new BigDecimal("5000"))
                 .fondosSuscritos(new ArrayList<>())
                 .build());
@@ -170,6 +165,7 @@ public class FondoControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void suscribirFondo_DeberiaLanzarTransaccionExitosa() throws Exception {
 
         String expectedResponse = "{\"success\":true,\"message\":\"Suscripción exitosa\",\"data\":{\"id\":\"68b5a1eb7b8871ef6d0d59d0\",\"clienteId\":\"1\",\"fondoId\":\"1\",\"nombreFondo\":\"FPV_BTG_PACTUAL_RECAUDADORA\",\"tipo\":\"APERTURA\",\"monto\":75000,\"fechaTransaccion\":\"2025-09-01T08:38:51.849164\"}}";
@@ -183,9 +179,9 @@ public class FondoControllerTest {
                 .builder()
                 .id("1")
                 .email("hola@gmail.com")
-                //.roles(Set.of(Roles.CLIENTE.name()))
                 .nombre("Oscar")
                 .telefono("1234")
+                .password("$2a$10$dummy")
                 .saldoDisponible(Constantes.SALDO_INICIAL_CLIENTE)
                 .fondosSuscritos(new ArrayList<>())
                 .build());
@@ -231,6 +227,7 @@ public class FondoControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void cancelarSuscripcion_DeberiaLanzarExcepcionSiClienteNoExiste() throws Exception {
 
         clienteRepository.deleteAll();
@@ -251,6 +248,7 @@ public class FondoControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void cancelarSuscripcion_DeberiaLanzarExcepcionSiFondoNoExist() throws Exception {
 
         String expectedResponse = "{\"success\":false,\"message\":\"Fondo no encontrado\",\"data\":null}";
@@ -264,9 +262,9 @@ public class FondoControllerTest {
                 .builder()
                 .id("1")
                 .email("hola@gmail.com")
-                //.roles(Set.of(Roles.CLIENTE.name()))
                 .nombre("Oscar")
                 .telefono("1234")
+                .password("$2a$10$dummy")
                 .saldoDisponible(Constantes.SALDO_INICIAL_CLIENTE)
                 .fondosSuscritos(new ArrayList<>())
                 .build());
@@ -280,6 +278,7 @@ public class FondoControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void cancelarSuscripcion_DeberiaLanzarExcepcionSiClienteNoEstaSuscritoAlFondo() throws Exception {
 
         String expectedResponse = "{\"success\":false,\"message\":\"El cliente no está suscrito a este fondo\",\"data\":null}";
@@ -293,9 +292,9 @@ public class FondoControllerTest {
                 .builder()
                 .id("1")
                 .email("hola@gmail.com")
-                //.roles(Set.of(Roles.CLIENTE.name()))
                 .nombre("Oscar")
                 .telefono("1234")
+                .password("$2a$10$dummy")
                 .saldoDisponible(Constantes.SALDO_INICIAL_CLIENTE)
                 .fondosSuscritos(List.of("2"))
                 .build());
@@ -309,6 +308,7 @@ public class FondoControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void cancelarSuscripcion_DeberiaLanzarTransaccionExitosa() throws Exception {
 
         String requestBody = "{\n" +
@@ -320,9 +320,9 @@ public class FondoControllerTest {
                 .builder()
                 .id("1")
                 .email("hola@gmail.com")
-                //.roles(Set.of(Roles.CLIENTE.name()))
                 .nombre("Oscar")
                 .telefono("1234")
+                .password("$2a$10$dummy")
                 .saldoDisponible(Constantes.SALDO_INICIAL_CLIENTE)
                 .fondosSuscritos(List.of("1"))
                 .build());
