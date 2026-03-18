@@ -1,0 +1,9 @@
+2026-03-18T14:31:31.172-05:00  INFO 40528 --- [prueba-tecnica-seti] [http-nio-8080-exec-7] c.b.p.controller.ClienteController       : Solicitud de creación de cliente recibida: Oscar Sanchez
+2026-03-18T14:31:31.176-05:00  INFO 40528 --- [prueba-tecnica-seti] [http-nio-8080-exec-7] c.b.p.service.ClienteServiceImpl         : Creando nuevo cliente: Oscar Sanchez
+2026-03-18T14:31:31.194-05:00  INFO 40528 --- [prueba-tecnica-seti] [http-nio-8080-exec-7] c.b.p.service.ClienteServiceImpl         : Cliente creado exitosamente con ID: 69bafd93e44af76da0159456
+2026-03-18T14:36:59.617-05:00  INFO 40528 --- [prueba-tecnica-seti] [http-nio-8080-exec-10] c.b.p.controller.ClienteController       : Solicitud de creación de cliente recibida: Oscar Sanchez
+2026-03-18T14:36:59.618-05:00  INFO 40528 --- [prueba-tecnica-seti] [http-nio-8080-exec-10] c.b.p.service.ClienteServiceImpl         : Creando nuevo cliente: Oscar Sanchez
+2026-03-18T14:36:59.647-05:00 ERROR 40528 --- [prueba-tecnica-seti] [http-nio-8080-exec-10] c.b.p.exception.GlobalExceptionHandler   : Error relacionado con cliente: Ya existe un cliente con este email
+2026-03-18T14:37:39.213-05:00  INFO 40528 --- [prueba-tecnica-seti] [http-nio-8080-exec-1] c.b.p.controller.ClienteController       : Solicitud de creación de cliente recibida: Oscar Sanchez
+2026-03-18T14:37:39.213-05:00  INFO 40528 --- [prueba-tecnica-seti] [http-nio-8080-exec-1] c.b.p.service.ClienteServiceImpl         : Creando nuevo cliente: Oscar Sanchez
+2026-03-18T14:37:39.222-05:00  INFO 40528 --- [prueba-tecnica-seti] [http-nio-8080-exec-1] c.b.p.service.ClienteServiceImpl         : Cliente creado exitosamente con ID: 69baff03e44af76da0159457

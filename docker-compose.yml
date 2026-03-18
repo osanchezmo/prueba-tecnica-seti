@@ -17,8 +17,9 @@ services:
     container_name: mongo_db
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_ROOT_USERNAME: btg_siti
+      MONGO_INITDB_ROOT_PASSWORD: siti123
+      MONGO_INITDB_DATABASE: btg_fondos
     ports:
       - "27017:27017"
     volumes:
