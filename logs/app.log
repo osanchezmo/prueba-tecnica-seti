@@ -1,9 +1,36 @@
-2026-03-18T17:13:46.130-05:00  WARN 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-1] c.b.p.exception.GlobalExceptionHandler   : Solicitud inválida: No tiene permisos para realizar esta operación sobre otro cliente
-2026-03-18T17:13:55.667-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.controller.FondoController         : Solicitud de suscripción recibida - Cliente: 69bb22929d04fd3211d76b07, Fondo: 1
-2026-03-18T17:13:55.668-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.service.FondoServiceImpl           : Procesando suscripción de fondo - Cliente: 69bb22929d04fd3211d76b07, Fondo: 1
-2026-03-18T17:13:55.679-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.service.NotificationServiceImpl    : Enviando notificación de suscripción para cliente: 69bb22929d04fd3211d76b07, fondo: FPV_BTG_PACTUAL_RECAUDADORA
-2026-03-18T17:13:55.679-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.utils.EnviarEmail                  : Enviando email a: juan@test.com
-2026-03-18T17:13:59.133-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.utils.EnviarEmail                  : Email enviado exitosamente a: juan@test.com
-2026-03-18T17:13:59.134-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.service.NotificationServiceImpl    : Notificación enviada exitosamente
-2026-03-18T17:14:07.274-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-5] c.b.p.controller.ClienteController       : Solicitud de historial de transacciones para cliente: 69bb22929d04fd3211d76b07
-2026-03-18T17:14:07.275-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-5] c.b.p.service.FondoServiceImpl           : Obteniendo historial de transacciones para cliente: 69bb22929d04fd3211d76b07
+2026-03-18T17:22:01.066-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-7] c.b.p.controller.ClienteController       : Solicitud de creación de cliente recibida: Juan Pérez
+2026-03-18T17:22:01.067-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-7] c.b.p.service.ClienteServiceImpl         : Creando nuevo cliente: Juan Pérez
+2026-03-18T17:22:01.176-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-7] c.b.p.service.ClienteServiceImpl         : Cliente creado exitosamente con ID: 69bb25899d04fd3211d76b0c
+2026-03-18T17:22:15.182-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-8] c.b.p.controller.AuthController          : Solicitud de login para email: osukarusoft5@yopmail.com
+2026-03-18T17:22:15.184-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-8] c.b.p.service.AuthServiceImpl            : Intento de autenticación para email: osukarusoft5@yopmail.com
+2026-03-18T17:22:20.341-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-9] c.b.p.controller.ClienteController       : Solicitud de historial de transacciones para cliente: 69bb25899d04fd3211d76b0c
+2026-03-18T17:22:20.341-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-9] c.b.p.service.FondoServiceImpl           : Obteniendo historial de transacciones para cliente: 69bb25899d04fd3211d76b0c
+2026-03-18T17:22:27.501-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-10] c.b.p.controller.FondoController         : Solicitud de suscripción recibida - Cliente: 69bb25899d04fd3211d76b0c, Fondo: 1
+2026-03-18T17:22:27.503-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-10] c.b.p.service.FondoServiceImpl           : Procesando suscripción de fondo - Cliente: 69bb25899d04fd3211d76b0c, Fondo: 1
+2026-03-18T17:22:27.512-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-10] c.b.p.service.NotificationServiceImpl    : Enviando notificación de suscripción para cliente: 69bb25899d04fd3211d76b0c, fondo: FPV_BTG_PACTUAL_RECAUDADORA
+2026-03-18T17:22:27.512-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-10] c.b.p.utils.EnviarEmail                  : Enviando email a: osukarusoft5@yopmail.com
+2026-03-18T17:22:29.215-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-10] c.b.p.utils.EnviarEmail                  : Email enviado exitosamente a: osukarusoft5@yopmail.com
+2026-03-18T17:22:29.216-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-10] c.b.p.service.NotificationServiceImpl    : Notificación enviada exitosamente
+2026-03-18T17:22:36.516-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-2] c.b.p.controller.ClienteController       : Solicitud de historial de transacciones para cliente: 69bb25899d04fd3211d76b0c
+2026-03-18T17:22:36.517-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-2] c.b.p.service.FondoServiceImpl           : Obteniendo historial de transacciones para cliente: 69bb25899d04fd3211d76b0c
+2026-03-18T17:23:39.699-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.controller.FondoController         : Solicitud de cancelación recibida - Cliente: 69bb25899d04fd3211d76b0c, Fondo: 1
+2026-03-18T17:23:39.700-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.service.FondoServiceImpl           : Procesando cancelación de suscripción - Cliente: 69bb25899d04fd3211d76b0c, Fondo: 1
+2026-03-18T17:23:39.710-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.service.FondoServiceImpl           : Cancelación exitosa - Transacción ID: 69bb25eb9d04fd3211d76b0e
+2026-03-18T17:26:47.473-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-6] c.b.p.controller.ClienteController       : Solicitud de creación de cliente recibida: Juan Pérez
+2026-03-18T17:26:47.475-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-6] c.b.p.service.ClienteServiceImpl         : Creando nuevo cliente: Juan Pérez
+2026-03-18T17:26:47.588-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-6] c.b.p.service.ClienteServiceImpl         : Cliente creado exitosamente con ID: 69bb26a79d04fd3211d76b0f
+2026-03-18T17:27:09.715-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-8] c.b.p.controller.AuthController          : Solicitud de login para email: osukarusoft6@yopmail.com
+2026-03-18T17:27:09.715-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-8] c.b.p.service.AuthServiceImpl            : Intento de autenticación para email: osukarusoft6@yopmail.com
+2026-03-18T17:27:14.866-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-9] c.b.p.controller.ClienteController       : Solicitud de historial de transacciones para cliente: 69bb26a79d04fd3211d76b0f
+2026-03-18T17:27:14.866-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-9] c.b.p.service.FondoServiceImpl           : Obteniendo historial de transacciones para cliente: 69bb26a79d04fd3211d76b0f
+2026-03-18T17:27:19.027-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-10] c.b.p.controller.FondoController         : Solicitud de suscripción recibida - Cliente: 69bb26a79d04fd3211d76b0f, Fondo: 1
+2026-03-18T17:27:19.028-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-10] c.b.p.service.FondoServiceImpl           : Procesando suscripción de fondo - Cliente: 69bb26a79d04fd3211d76b0f, Fondo: 1
+2026-03-18T17:27:19.036-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-10] c.b.p.service.NotificationServiceImpl    : Enviando notificación de suscripción para cliente: 69bb26a79d04fd3211d76b0f, fondo: FPV_BTG_PACTUAL_RECAUDADORA
+2026-03-18T17:27:20.204-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-10] c.b.p.service.NotificationServiceImpl    : Notificación enviada exitosamente
+2026-03-18T17:37:16.722-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-3] c.b.p.controller.FondoController         : Solicitud de cancelación recibida - Cliente: 69bb26a79d04fd3211d76b0f, Fondo: 1
+2026-03-18T17:37:16.724-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-3] c.b.p.service.FondoServiceImpl           : Procesando cancelación de suscripción - Cliente: 69bb26a79d04fd3211d76b0f, Fondo: 1
+2026-03-18T17:37:16.732-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-3] c.b.p.service.FondoServiceImpl           : Cancelación exitosa - Transacción ID: 69bb291c9d04fd3211d76b11
+2026-03-18T17:37:20.071-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.controller.FondoController         : Solicitud de suscripción recibida - Cliente: 69bb26a79d04fd3211d76b0f, Fondo: 1
+2026-03-18T17:37:20.072-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.service.FondoServiceImpl           : Procesando suscripción de fondo - Cliente: 69bb26a79d04fd3211d76b0f, Fondo: 1
+2026-03-18T17:37:20.080-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.service.NotificationServiceImpl    : Enviando notificación de suscripción para cliente: 69bb26a79d04fd3211d76b0f, fondo: FPV_BTG_PACTUAL_RECAUDADORA
+2026-03-18T17:37:21.082-05:00  INFO 12997 --- [prueba-tecnica-seti] [http-nio-8080-exec-4] c.b.p.service.NotificationServiceImpl    : Notificación enviada exitosamente
