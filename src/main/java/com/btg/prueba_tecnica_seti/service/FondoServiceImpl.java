@@ -6,6 +6,7 @@ import com.btg.prueba_tecnica_seti.entity.Cliente;
 import com.btg.prueba_tecnica_seti.entity.Fondo;
 import com.btg.prueba_tecnica_seti.entity.Transaccion;
 import com.btg.prueba_tecnica_seti.enums.TipoTransaccion;
+import com.btg.prueba_tecnica_seti.exception.BadRequestException;
 import com.btg.prueba_tecnica_seti.exception.NotFoundException;
 import com.btg.prueba_tecnica_seti.repository.ClienteRepository;
 import com.btg.prueba_tecnica_seti.repository.FondoRepository;
@@ -51,12 +52,12 @@ public class FondoServiceImpl implements FondoService {
         // Verificar si ya está suscrito
         if (cliente.getFondosSuscritos() != null &&
                 cliente.getFondosSuscritos().contains(request.getFondoId())) {
-            throw new NotFoundException("El cliente ya está suscrito a este fondo");
+            throw new BadRequestException("El cliente ya está suscrito a este fondo");
         }
 
         // Verificar saldo suficiente
         if (cliente.getSaldoDisponible().compareTo(fondo.getMontoMinimo()) < 0) {
-            throw new NotFoundException(
+            throw new BadRequestException(
                     String.format("No tiene saldo disponible para vincularse al fondo %s", fondo.getNombre())
             );
         }
@@ -113,7 +114,7 @@ public class FondoServiceImpl implements FondoService {
         // Verificar si está suscrito
         if (cliente.getFondosSuscritos() == null ||
                 !cliente.getFondosSuscritos().contains(request.getFondoId())) {
-            throw new NotFoundException("El cliente no está suscrito a este fondo");
+            throw new BadRequestException("El cliente no está suscrito a este fondo");
         }
 
         // Devolver el monto al saldo del cliente

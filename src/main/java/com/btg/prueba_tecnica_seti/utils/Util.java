@@ -1,6 +1,6 @@
 package com.btg.prueba_tecnica_seti.utils;
 
-import com.btg.prueba_tecnica_seti.exception.NotFoundException;
+import com.btg.prueba_tecnica_seti.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -20,13 +20,13 @@ public class Util {
     public <T extends Enum<T>> T validarEnum(Class<T> enumType, String value) {
 
         if (value == null) {
-            throw new NotFoundException("El campo no puede estar vacio");
+            throw new BadRequestException("El campo no puede estar vacio");
         }
 
         return Arrays.stream(enumType.getEnumConstants())
                 .filter(e -> e.name().equalsIgnoreCase(value))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException(
+                .orElseThrow(() -> new BadRequestException(
                         "Valor inválido. Valores válidos: " + Arrays.toString(enumType.getEnumConstants())
                 ));
     }

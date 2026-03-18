@@ -4,6 +4,7 @@ import com.btg.prueba_tecnica_seti.dto.ClienteRequest;
 import com.btg.prueba_tecnica_seti.dto.ClienteResponse;
 import com.btg.prueba_tecnica_seti.entity.Cliente;
 import com.btg.prueba_tecnica_seti.enums.PreferenciaNotificacion;
+import com.btg.prueba_tecnica_seti.exception.BadRequestException;
 import com.btg.prueba_tecnica_seti.exception.NotFoundException;
 import com.btg.prueba_tecnica_seti.repository.ClienteRepository;
 import com.btg.prueba_tecnica_seti.service.impl.ClienteService;
@@ -30,7 +31,7 @@ public class ClienteServiceImpl  implements ClienteService {
 
         Optional<Cliente> clienteExistente = clienteRepository.findByEmail(request.getEmail());
         if (clienteExistente.isPresent()) {
-            throw new NotFoundException("Ya existe un cliente con este email");
+            throw new BadRequestException("Ya existe un cliente con este email");
         }
 
         Cliente cliente = util.convertTo(request, Cliente.class);
