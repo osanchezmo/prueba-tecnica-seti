@@ -5,13 +5,26 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.tags.Tag;
+import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
 
     private static final String SECURITY_SCHEME_NAME = "bearerAuth";
+
+    @Bean
+    public OpenApiCustomizer tagsOrderCustomizer() {
+        return openApi -> openApi.setTags(List.of(
+                new Tag().name("Autenticación").description("API para login y autenticación"),
+                new Tag().name("Clientes").description("API para gestión de clientes"),
+                new Tag().name("Fondos").description("API para gestión de fondos de inversión")
+        ));
+    }
 
     @Bean
     public OpenAPI customOpenAPI() {
