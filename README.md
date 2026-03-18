@@ -204,3 +204,37 @@ Esta sección contiene la consulta **SQL** para la segunda parte del desafío, b
 >   sucursal ||--o{ disponibilidad : "ofrece"
 >   sucursal ||--o{ visitan : "es visitada por"
 >```
+
+### 🐘️Solución SQL
+
+> [!IMPORTANT]
+> Es necesario ejecutar el script **parte-2-schema-data.sql** para realizar la creación y población de las tablas requeridas para esta sección.
+
+A continuación, se presentan los comandos necesarios para ejecutar el script mencionado anteriormente desde la terminal. También es posible ejecutarlo utilizando un cliente de base de datos.
+
+#### 🐳 Ejecutar comandos sin Docker
+>```shell
+> psql -U <nombre_usuario> -d <nombre_bd> < <ruta_archivo>
+>```
+
+#### 🐳 Ejecutar comandos con Docker
+>```shell
+> docker exec -i <nombre_contenedor> psql -U <nombre_usuario> -d <nombre_bd> < <ruta_archivo>
+>```
+
+
+La siguiente consulta resuelve el problema de **obtener los nombres de los clientes que tienen inscrito algún producto disponible solo en las sucursales que visitan**.
+
+>```sql
+> SELECT DISTINCT C.nombre
+> FROM cliente AS C
+> JOIN inscripcion AS i ON c.id = i.idCliente
+> JOIN disponibilidad AS d ON i.idProducto = d.idProducto
+> JOIN visitan AS v ON v.idSucursal = d.idSucursal AND v.idCliente = c.id
+> WHERE i.idProducto IN (
+>         SELECT idProducto
+>         FROM disponibilidad
+>         GROUP BY idProducto
+>         HAVING COUNT(idSucursal) = 1
+>);
+>```
