@@ -75,7 +75,7 @@ A continuación, se presentan las funcionalidades del sistema, las reglas de neg
 
 A continuación, se listan los endpoints principales disponibles en esta aplicación, junto con una breve descripción de su funcionalidad.
 
-##### 🔐 Autenticación (/api/auth)
+##### 🔗 Autenticación (/api/auth)
 | Método |  Endpoint  |                         Descripción                          |
 |:------:|:----------:|:------------------------------------------------------------:|
 |  POST  |  /login    | Autentica con email y contraseña, retorna JWT Bearer token   |
