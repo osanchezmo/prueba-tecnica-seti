@@ -2,48 +2,92 @@
 
 API REST para la gestión de fondos de inversión. Este proyecto está dividido en dos partes según la especificación técnica (`prueba_tecnica_back_end 4.pdf`).
 
-Los requisitos y endpoints están definidos en el documento técnico y en la colección Postman incluida en el repositorio.
+Los requisitos y endpoints están en ese documento y en la colección Postman (`BTG Fondos API.postman_collection.json`). La **Puesta en marcha** usa **Docker Compose** para MongoDB y PostgreSQL; la API Spring Boot se ejecuta en tu máquina contra esos servicios en `localhost`.
 
 ## Contenido
 
-- [Base de datos (opcional)](#base-de-datos-opcional)
-- [Requisitos previos](#requisitos-previos)
-- [Parte 1 - API Fondos](#parte-1---api-fondos)
-- [Parte 2 - Consulta SQL](#parte-2---consulta-sql)
-- [Puesta en marcha](#puesta-en-marcha)
+- [Puesta en marcha](#puesta-en-marcha) — lo primero: entorno, API, tests y SQL Parte 2
+- [Parte 1 - API Fondos](#parte-1---api-fondos) — arquitectura, modelo y detalle de la sol API
+- [Parte 2 - Consulta SQL](#parte-2---consulta-sql) — modelo relacional, scripts y consulta
 - [Configuración (Twilio, Email)](#configuración-twilio-email)
 - [Estructura del proyecto](#estructura-del-proyecto)
+- [Notas](#notas)
 
 ---
 
-## Base de datos (opcional)
+## Puesta en marcha
 
-> [!NOTE]
-> El `docker-compose.yml` es **opcional** y sirve para **ambas partes**. Solo es necesario si no tienes MongoDB ni PostgreSQL instalados localmente. Si ya los tienes configurados, omite este paso.
->
-> - **Parte 1:** MongoDB en `localhost:27017` (usuario: `btg_siti`, contraseña: `siti123`, base: `btg_fondos`)
-> - **Parte 2:** PostgreSQL en `localhost:5432` (usuario: `admin`, contraseña: `admin123`, base: `btg`)
+Aquí va lo necesario para **dejar el proyecto funcionando** antes de entrar al detalle de cada parte.
+
+### Requisitos previos
+
+- **Java 17+** y **Maven** (o `./mvnw`)
+- **Docker** y **Docker Compose** v2 (comando `docker compose`) para las bases de datos del proyecto
+
+### Bases de datos (Docker Compose)
+
+Este README asume que **MongoDB** y **PostgreSQL** los levantas con el `docker-compose.yml` de la raíz. En tu máquina quedan expuestos así:
+
+| Servicio   | Puerto | Usuario / contraseña | Base        |
+|------------|--------|----------------------|-------------|
+| MongoDB    | `27017` | `btg_siti` / `siti123` | `btg_fondos` |
+| PostgreSQL | `5432`  | `admin` / `admin123`  | `btg`       |
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
----
+*(Si tu instalación solo tiene el binario clásico, usa `docker-compose up -d`.)*
 
-## Requisitos previos
+### Parte 1 — Compilar y ejecutar la API
 
-- Java 17+
-- Maven 3.6+ (o Maven Wrapper `./mvnw`)
-- MongoDB (local o remoto) — Parte 1
-- PostgreSQL (local o remoto) — Parte 2
+Con **MongoDB** en marcha (tras `docker compose up -d`):
 
+```bash
+./mvnw clean install
+./mvnw spring-boot:run
+```
+
+- **Aplicación:** http://localhost:8080  
+- **Swagger UI:** http://localhost:8080/  
+- **Postman:** importar `BTG Fondos API.postman_collection.json`  
+- **Flujo sugerido:** crear cliente → login → suscribir a fondo (con JWT en `Authorization: Bearer <token>`).
+
+### Parte 1 — Tests
+
+```bash
+./mvnw test
+```
+
+### Scripts SQL Parte 2
+
+Carpeta: `parte-2-sql/`. Con el **compose del repo**, la base **`btg`** ya existe; **no ejecutes** `01-create-database.sql` salvo que montes PostgreSQL fuera de este Docker.
+
+**Orden de los scripts** (base **`btg`**, tablas en **`public`**):
+
+| Paso | Archivo | Rol |
+|------|---------|-----|
+| 1 | `02-schema.sql` | Elimina el schema `btg` antiguo si existía y trabaja en `public`. |
+| 2 | `03-ddl-tablas.sql` | Tablas y claves foráneas. |
+| 3 | `04-constantes.sql` | `CHECK` de `tipoProducto` y comentarios. |
+| 4 | `05-datos-semilla.sql` | Datos de prueba. |
+
+**Cargar scripts con Docker** (desde la **raíz del repo**, sin entrar al contenedor):
+
+1. Ejecuta:
+
+```bash
+cat parte-2-sql/02-schema.sql \
+    parte-2-sql/03-ddl-tablas.sql \
+    parte-2-sql/04-constantes.sql \
+    parte-2-sql/05-datos-semilla.sql \
+  | docker exec -i postgres_db psql -U admin -d btg -v ON_ERROR_STOP=1
+```
 ---
 
 ## Parte 1 - API Fondos
 
 ### Descripción
-
-Sistema de gestión de fondos de inversión:
 
 | Funcionalidad | Descripción |
 |---------------|-------------|
@@ -142,12 +186,9 @@ erDiagram
     }
 ```
 
-### Solución Parte 1
+### Solución Parte 1 (detalle)
 
-**Probar la API:** Crear cliente → Login → Suscribir a fondo
-
-- **Swagger UI:** http://localhost:8080/
-- **Postman:** Importar `BTG Fondos API.postman_collection.json`
+Los comandos para levantar la API y los tests están en [Puesta en marcha](#puesta-en-marcha).
 
 **Endpoints:**
 
@@ -179,6 +220,8 @@ erDiagram
 ### Descripción
 
 Consulta SQL para obtener clientes inscritos en productos que solo están disponibles en una sucursal y que visitan esa sucursal.
+
+La **carga del esquema y los datos** está descrita paso a paso en [Scripts SQL Parte 2](#scripts-sql-parte-2) (dentro de Puesta en marcha).
 
 ### Modelo de datos
 
@@ -227,31 +270,26 @@ erDiagram
     }
 ```
 
-### Solución Parte 2
+### Scripts (`parte-2-sql/`)
 
-> [!IMPORTANT]
-> **Ejecutar el archivo SQL primero** para crear el esquema y cargar los datos (`parte-2-schema-data.sql`).
+| Archivo | Contenido |
+|---------|-----------|
+| `01-create-database.sql` | Creación manual de la base `btg` (con el compose del proyecto **no se usa**; el contenedor ya crea la base) |
+| `02-schema.sql` | Alinea la sesión al schema **`public`** y elimina el schema `btg` si existía (versión antigua) |
+| `03-ddl-tablas.sql` | Tablas y relaciones (PK/FK) |
+| `04-constantes.sql` | Restricciones de dominio (`CHECK` sobre `tipoProducto`) y comentarios |
+| `05-datos-semilla.sql` | Datos de prueba |
 
-**Con Docker Compose:**
-```bash
-docker exec -i postgres_db psql -U admin -d btg < parte-2-schema-data.sql
-```
+### Consulta SQL
 
-**Con PostgreSQL local:**
-```bash
-psql -U admin -d btg -h localhost -f parte-2-schema-data.sql
-```
-
-O desde pgAdmin/DBeaver: ejecutar el contenido de `parte-2-schema-data.sql` en la base `btg`.
-
-**Consulta SQL:**
+Tablas en el schema **`public`** de la base **`btg`** (definición aquí; no hay archivo aparte solo para la consulta):
 
 ```sql
 SELECT DISTINCT C.nombre
 FROM cliente AS C
-JOIN inscripcion AS i ON c.id = i.idCliente
+JOIN inscripcion AS i ON C.id = i.idCliente
 JOIN disponibilidad AS d ON i.idProducto = d.idProducto
-JOIN visitan AS v ON v.idSucursal = d.idSucursal AND v.idCliente = c.id
+JOIN visitan AS v ON v.idSucursal = d.idSucursal AND v.idCliente = C.id
 WHERE i.idProducto IN (
     SELECT idProducto
     FROM disponibilidad
@@ -259,29 +297,6 @@ WHERE i.idProducto IN (
     HAVING COUNT(idSucursal) = 1
 );
 ```
-
----
-
-## Puesta en marcha
-
-### Parte 1 — Ejecutar aplicación
-
-```bash
-./mvnw clean install
-./mvnw spring-boot:run
-```
-
-Aplicación en `http://localhost:8080`
-
-### Parte 1 — Tests
-
-```bash
-./mvnw test
-```
-
-### Parte 2 — Ejecutar esquema SQL
-
-Ver comandos en [Solución Parte 2](#solución-parte-2).
 
 ---
 
@@ -316,6 +331,8 @@ twilio.country-code=57
 ## Estructura del proyecto
 
 ```
+parte-2-sql/              # Parte 2: SQL para PostgreSQL en Docker (base btg, schema public)
+
 src/main/java/com/btg/prueba_tecnica_seti/
 ├── config/         # Security, MongoDB, OpenAPI
 ├── controller/     # REST (Auth, Cliente, Fondo)
@@ -331,6 +348,7 @@ src/main/java/com/btg/prueba_tecnica_seti/
 ## Notas
 
 > [!NOTE]
-> - Se inicializan **5 fondos predefinidos** automáticamente al arrancar.
-> - El saldo inicial de cada nuevo cliente es de **$500.000 COP**.
-> - Las notificaciones de suscripción usan **Email** (SMTP) y **SMS** (Twilio). Configurar en `application.properties`.
+> - `application.properties` apunta a MongoDB y PostgreSQL en **`localhost`** con las credenciales del `docker-compose.yml`; al usar ese compose, no hace falta cambiarlas.
+> - Se inicializan **5 fondos predefinidos** al arrancar la API.
+> - Saldo inicial de cada cliente: **$500.000 COP**.
+> - Notificaciones de suscripción: **Email** (SMTP) y **SMS** (Twilio); revisar [Configuración](#configuración-twilio-email).
