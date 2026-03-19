@@ -1,6 +1,8 @@
 # Prueba Técnica SETI - Backend
 
-API REST para la gestión de fondos de inversión. Este proyecto está dividido en dos partes según la especificación técnica. **Esta documentación cubre únicamente la Parte 1.**
+API REST para la gestión de fondos de inversión. Este proyecto está dividido en dos partes según la especificación técnica (`prueba_tecnica_back_end 4.pdf`). **Esta documentación cubre únicamente la Parte 1.**
+
+Los requisitos y endpoints están definidos en el documento técnico y en la colección Postman incluida en el repositorio.
 
 ## Contenido
 
@@ -8,6 +10,7 @@ API REST para la gestión de fondos de inversión. Este proyecto está dividido 
 - [Arquitectura](#arquitectura)
 - [Requisitos y ejecución](#requisitos-y-ejecución)
 - [API](#api)
+- [Colección Postman](#colección-postman)
 - [Estructura del proyecto](#estructura-del-proyecto)
 
 ---
@@ -162,8 +165,8 @@ El proyecto incluye tests unitarios (services) y de integración (controllers).
 
 1. `docker-compose up -d` (si no tienes MongoDB)
 2. `mvn spring-boot:run`
-3. Abrir Swagger: http://localhost:8080/
-4. Crear cliente → Login → Suscribir a fondo (usar el JWT en endpoints protegidos)
+3. Probar la API con **Swagger** (http://localhost:8080/) o **Postman** (importar `BTG Fondos API.postman_collection.json`)
+4. Crear cliente → Login → Suscribir a fondo
 
 ---
 
@@ -171,11 +174,33 @@ El proyecto incluye tests unitarios (services) y de integración (controllers).
 
 ### Documentación interactiva
 
-> [!TIP]
-> Usa **Swagger UI** para probar la API de forma interactiva sin necesidad de Postman o curl.
-
 - **Swagger UI:** http://localhost:8080/
 - **OpenAPI:** http://localhost:8080/v3/api-docs
+
+### Colección Postman
+
+> [!NOTE]
+> El proyecto incluye la colección **BTG Fondos API.postman_collection.json**, que forma parte de los requisitos del documento técnico. Contiene todos los endpoints de la Parte 1 listos para probar.
+
+**Importar en Postman:**
+1. Abrir Postman → File → Import
+2. Seleccionar el archivo `BTG Fondos API.postman_collection.json` (en la raíz del proyecto)
+3. La colección incluye variables preconfiguradas: `baseUrl` (http://localhost:8080), `token`, `clienteId`
+
+**Flujo de uso (según la colección):**
+1. **Crear cliente** → El `clienteId` se guarda automáticamente
+2. **Login** → El JWT se guarda automáticamente en `token`
+3. **Endpoints protegidos** → Usan el token automáticamente (Suscribir, Cancelar, Historial)
+
+**IDs de fondos disponibles:** 1, 2, 3, 4, 5
+
+| ID | Fondo | Monto mínimo |
+|----|-------|--------------|
+| 1 | FPV_BTG_PACTUAL_RECAUDADORA | $75.000 COP |
+| 2 | FPV_BTG_PACTUAL_ECOPETROL | $125.000 COP |
+| 3 | DEUDAPRIVADA | $50.000 COP |
+| 4 | FDO-ACCIONES | $250.000 COP |
+| 5 | FPV_BTG_PACTUAL_DINAMICA | $100.000 COP |
 
 ### Endpoints (Parte 1)
 
