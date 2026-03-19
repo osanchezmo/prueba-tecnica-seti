@@ -8,9 +8,10 @@ Los requisitos y endpoints están definidos en el documento técnico y en la col
 
 - [Descripción](#descripción)
 - [Arquitectura](#arquitectura)
-- [Requisitos y ejecución](#requisitos-y-ejecución)
-- [API](#api)
-- [Colección Postman](#colección-postman)
+- [Requisitos previos](#requisitos-previos)
+- [Puesta en marcha](#puesta-en-marcha)
+- [Probar la API](#probar-la-api)
+- [Referencia API](#referencia-api)
 - [Estructura del proyecto](#estructura-del-proyecto)
 
 ---
@@ -122,18 +123,20 @@ erDiagram
 
 ---
 
-## Requisitos y ejecución
-
-### Requisitos
+## Requisitos previos
 
 - Java 17+
 - Maven 3.6+
 - MongoDB (local o remoto)
 
-### Base de datos (opcional)
+---
+
+## Puesta en marcha
+
+### 1. Base de datos (opcional)
 
 > [!NOTE]
-> El `docker-compose.yml` es **opcional**. Solo es necesario si no tienes MongoDB instalado localmente. Si ya lo tienes configurado en tu computadora, puedes omitir este paso y ajustar las credenciales en `application.properties`.
+> El `docker-compose.yml` es **opcional**. Solo es necesario si no tienes MongoDB instalado localmente. Si ya lo tienes configurado, omite este paso y ajusta las credenciales en `application.properties`.
 
 ```bash
 docker-compose up -d
@@ -141,7 +144,7 @@ docker-compose up -d
 
 MongoDB quedará en `localhost:27017` (usuario: `btg_siti`, contraseña: `siti123`, base: `btg_fondos`).
 
-### Ejecución
+### 2. Ejecutar la aplicación
 
 ```bash
 mvn clean install
@@ -150,7 +153,7 @@ mvn spring-boot:run
 
 Aplicación disponible en `http://localhost:8080`.
 
-### Tests
+### 3. Ejecutar tests
 
 ```bash
 mvn test
@@ -158,41 +161,26 @@ mvn test
 
 El proyecto incluye tests unitarios (services) y de integración (controllers).
 
-### Flujo de prueba rápida
-
-> [!TIP]
-> Para validar la solución rápidamente, sigue estos pasos en orden:
-
-1. `docker-compose up -d` (si no tienes MongoDB)
-2. `mvn spring-boot:run`
-3. Probar la API con **Swagger** (http://localhost:8080/) o **Postman** (importar `BTG Fondos API.postman_collection.json`)
-4. Crear cliente → Login → Suscribir a fondo
-
 ---
 
-## API
+## Probar la API
 
-### Documentación interactiva
+> [!TIP]
+> Sigue este flujo para validar la solución: **Crear cliente** → **Login** → **Suscribir a fondo**.
 
-- **Swagger UI:** http://localhost:8080/
-- **OpenAPI:** http://localhost:8080/v3/api-docs
+### Opción A: Swagger UI
 
-### Colección Postman
+Documentación interactiva disponible en http://localhost:8080/
 
-> [!NOTE]
-> El proyecto incluye la colección **BTG Fondos API.postman_collection.json**, que forma parte de los requisitos del documento técnico. Contiene todos los endpoints de la Parte 1 listos para probar.
+### Opción B: Postman
 
-**Importar en Postman:**
-1. Abrir Postman → File → Import
-2. Seleccionar el archivo `BTG Fondos API.postman_collection.json` (en la raíz del proyecto)
-3. La colección incluye variables preconfiguradas: `baseUrl` (http://localhost:8080), `token`, `clienteId`
+El proyecto incluye la colección **BTG Fondos API.postman_collection.json** (requisito del documento técnico).
 
-**Flujo de uso (según la colección):**
-1. **Crear cliente** → El `clienteId` se guarda automáticamente
-2. **Login** → El JWT se guarda automáticamente en `token`
-3. **Endpoints protegidos** → Usan el token automáticamente (Suscribir, Cancelar, Historial)
+1. **Importar:** Postman → File → Import → Seleccionar `BTG Fondos API.postman_collection.json`
+2. **Variables:** `baseUrl` (http://localhost:8080), `token` y `clienteId` se gestionan automáticamente
+3. **Flujo:** Crear cliente → Login → Los endpoints protegidos usan el token automáticamente
 
-**IDs de fondos disponibles:** 1, 2, 3, 4, 5
+### Fondos disponibles
 
 | ID | Fondo | Monto mínimo |
 |----|-------|--------------|
@@ -202,7 +190,11 @@ El proyecto incluye tests unitarios (services) y de integración (controllers).
 | 4 | FDO-ACCIONES | $250.000 COP |
 | 5 | FPV_BTG_PACTUAL_DINAMICA | $100.000 COP |
 
-### Endpoints (Parte 1)
+---
+
+## Referencia API
+
+### Endpoints
 
 | Método | Endpoint | Descripción | Auth |
 |--------|----------|-------------|------|
@@ -212,13 +204,13 @@ El proyecto incluye tests unitarios (services) y de integración (controllers).
 | POST | `/api/fondos/cancelar` | Cancelar suscripción | JWT |
 | GET | `/api/clientes/{id}/transacciones` | Historial de transacciones | JWT |
 
-### Uso del JWT
+### Autenticación
 
 > [!TIP]
-> Para endpoints protegidos, incluye el token en el header `Authorization`:
+> Para endpoints protegidos, incluye el token en el header:
 
 ```
-Authorization: Bearer <tu_token_jwt>
+Authorization: Bearer <token>
 ```
 
 ### Roles
@@ -241,8 +233,10 @@ src/main/java/com/btg/prueba_tecnica_seti/
 └── service/impl/   # Lógica de negocio
 ```
 
+---
+
 ## Notas
 
 > [!NOTE]
-> - Se inicializan **5 fondos predefinidos** automáticamente al arrancar la aplicación.
+> - Se inicializan **5 fondos predefinidos** automáticamente al arrancar.
 > - El saldo inicial de cada nuevo cliente es de **$500.000 COP**.
