@@ -186,6 +186,52 @@ erDiagram
     }
 ```
 
+### Justificación de arquitectura
+
+#### ¿Por qué MongoDB (NoSQL)?
+
+El dominio de fondos de inversión tiene un perfil de datos que encaja naturalmente con un modelo de documentos:
+
+- **Lista de fondos suscritos embebida en el cliente**: en un modelo relacional requeriría una tabla intermedia y un JOIN en cada operación; en MongoDB es simplemente un array dentro del documento `Cliente`, lo que hace la lectura y escritura de suscripciones muy eficiente.
+- **Esquema flexible**: los fondos pueden añadir atributos (condiciones especiales, categorías nuevas) sin necesidad de migraciones de esquema.
+- **Escalabilidad horizontal**: MongoDB escala horizontalmente de forma nativa, algo importante si la plataforma crece en volumen de clientes y transacciones.
+
+#### ¿Por qué arquitectura en capas (Controller → Service → Repository)?
+
+Se adoptó la arquitectura en capas estándar de Spring Boot por tres razones:
+
+1. **Separación de responsabilidades**: el controller solo maneja HTTP (deserialización, validación de entrada, códigos de respuesta); el service contiene toda la lógica de negocio (reglas de saldo, suscripciones, notificaciones); el repository abstrae la persistencia. Cada capa puede evolucionar de forma independiente.
+2. **Testeabilidad**: los services se pueden testear con Mockito sin levantar el servidor ni la base de datos; los controllers se pueden testear con MockMvc sin depender de la lógica de negocio real.
+3. **Mantenibilidad**: cualquier desarrollador nuevo reconoce inmediatamente la estructura del proyecto, lo que reduce el tiempo de onboarding.
+
+#### ¿Por qué JWT stateless?
+
+- **Sin estado en servidor**: no se necesita almacén de sesiones (Redis, base de datos de sesiones), lo que simplifica el despliegue y el escalado horizontal.
+- **Portabilidad**: el token viaja en el header `Authorization: Bearer <token>`, lo que facilita el consumo desde cualquier cliente (web, móvil, Postman).
+- **Claims embebidos**: el `clienteId`, el `email` y los `roles` viajan dentro del token, evitando una consulta a base de datos en cada petición para resolver el usuario autenticado.
+
+#### ¿Por qué BCrypt para contraseñas?
+
+BCrypt es el estándar de la industria para hashing de contraseñas porque incluye un `salt` automático (evita ataques de rainbow table) y su factor de coste ajustable hace que el hash sea deliberadamente lento, lo que dificulta los ataques de fuerza bruta incluso si la base de datos es comprometida.
+
+#### ¿Por qué Spring Boot en lugar de Python/FastAPI o .NET 9?
+
+El documento sugiere FastAPI (Python) o .NET 9 como opciones deseables. Se optó por **Spring Boot** dado que:
+
+- Es el framework Java empresarial más utilizado en el ecosistema BTG Pactual / banca colombiana.
+- El ecosistema Spring (Security, Data MongoDB, Mail, Validation, OpenAPI) cubre todos los requisitos del problema con librerías maduras y ampliamente documentadas.
+- Spring Boot 3 con Java 17 tiene soporte LTS, lo que es relevante para entornos productivos.
+
+#### Modelo de datos — decisiones de diseño
+
+| Decisión | Alternativa descartada | Razón |
+|---|---|---|
+| `fondosSuscritos` como array en `Cliente` | Colección separada de suscripciones | Lecturas más rápidas; la suscripción es parte del estado del cliente |
+| `Transaccion` como colección independiente | Subdocumento en `Cliente` | El historial puede crecer indefinidamente; colección separada permite consultas eficientes con índices |
+| IDs de fondo como `String` "1"–"5" | ObjectId generado por MongoDB | Permite referenciar los fondos predefinidos con IDs predecibles desde el cliente |
+
+---
+
 ### Solución Parte 1 (detalle)
 
 Los comandos para levantar la API y los tests están en [Puesta en marcha](#puesta-en-marcha).
@@ -279,24 +325,40 @@ erDiagram
 | `03-ddl-tablas.sql` | Tablas y relaciones (PK/FK) |
 | `04-constantes.sql` | Restricciones de dominio (`CHECK` sobre `tipoProducto`) y comentarios |
 | `05-datos-semilla.sql` | Datos de prueba |
+| `06-consulta.sql` | Consulta principal: clientes con productos disponibles solo en sucursales que visitan |
 
 ### Consulta SQL
 
-Tablas en el schema **`public`** de la base **`btg`** (definición aquí; no hay archivo aparte solo para la consulta):
+Archivo: `parte-2-sql/06-consulta.sql`. Tablas en el schema **`public`** de la base **`btg`**.
+
+**Requerimiento:** obtener los nombres de los clientes que tienen inscrito algún producto disponible **solo en las sucursales que visitan** — es decir, para el producto inscrito no debe existir ninguna sucursal donde esté disponible que el cliente no haya visitado (puede ser 1 sucursal o varias, siempre que el cliente las visite todas).
 
 ```sql
-SELECT DISTINCT C.nombre
-FROM cliente AS C
-JOIN inscripcion AS i ON C.id = i.idCliente
-JOIN disponibilidad AS d ON i.idProducto = d.idProducto
-JOIN visitan AS v ON v.idSucursal = d.idSucursal AND v.idCliente = C.id
-WHERE i.idProducto IN (
-    SELECT idProducto
-    FROM disponibilidad
-    GROUP BY idProducto
-    HAVING COUNT(idSucursal) = 1
+SELECT DISTINCT c.nombre
+FROM cliente c
+JOIN inscripcion i ON c.id = i.idCliente
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM disponibilidad d
+    WHERE d.idProducto = i.idProducto
+      AND NOT EXISTS (
+          SELECT 1
+          FROM visitan v
+          WHERE v.idSucursal = d.idSucursal
+            AND v.idCliente = c.id
+      )
 );
 ```
+
+**Resultado con los datos de prueba:**
+
+| Cliente |
+|---------|
+| Juan Carlos |
+| Ana Isabel |
+| Luis Fernando |
+| Roberto |
+| Diego |
 
 ---
 
