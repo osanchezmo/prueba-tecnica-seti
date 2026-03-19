@@ -11,6 +11,7 @@ Los requisitos y endpoints están definidos en el documento técnico y en la col
 - [Parte 1 - API Fondos](#parte-1---api-fondos)
 - [Parte 2 - Consulta SQL](#parte-2---consulta-sql)
 - [Puesta en marcha](#puesta-en-marcha)
+- [Configuración (Twilio, Email)](#configuración-twilio-email)
 - [Estructura del proyecto](#estructura-del-proyecto)
 
 ---
@@ -281,6 +282,34 @@ Aplicación en `http://localhost:8080`
 ### Parte 2 — Ejecutar esquema SQL
 
 Ver comandos en [Solución Parte 2](#solución-parte-2).
+
+---
+
+## Configuración (Twilio, Email)
+
+Las notificaciones de suscripción a fondos se envían por **Email** (SMTP) o **SMS** (Twilio) según la preferencia del cliente. Configurar en `application.properties`.
+
+### Variables Twilio (SMS)
+
+Obtén las credenciales en [Twilio Console](https://www.twilio.com/console):
+
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `twilio.account-sid` | Account SID de tu cuenta Twilio | `ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
+| `twilio.auth-token` | Auth Token de tu cuenta Twilio | `your_auth_token` |
+| `twilio.phone-number` | Número Twilio con capacidad SMS (formato E.164) | `+573001234567` |
+| `twilio.country-code` | Código de país para números sin prefijo (opcional, default: 57) | `57` |
+
+```properties
+# SMS config Twilio
+twilio.account-sid=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+twilio.auth-token=your_auth_token
+twilio.phone-number=+573001234567
+twilio.country-code=57
+```
+
+> [!NOTE]
+> El número de teléfono del cliente se formatea automáticamente a E.164. Si el número no incluye el prefijo `+`, se agregará `twilio.country-code` (ej: `3001234567` → `+573001234567`).
 
 ---
 
