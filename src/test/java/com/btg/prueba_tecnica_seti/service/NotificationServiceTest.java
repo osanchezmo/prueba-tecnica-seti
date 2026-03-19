@@ -4,7 +4,7 @@ import com.btg.prueba_tecnica_seti.entity.Cliente;
 import com.btg.prueba_tecnica_seti.entity.Fondo;
 import com.btg.prueba_tecnica_seti.enums.PreferenciaNotificacion;
 import com.btg.prueba_tecnica_seti.utils.EnviarEmail;
-import com.btg.prueba_tecnica_seti.utils.SmsInfobip;
+import com.btg.prueba_tecnica_seti.utils.SmsTwilio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +27,7 @@ class NotificationServiceImplTest {
     private EnviarEmail enviarEmail;
 
     @Mock
-    private SmsInfobip smsInfobip;
+    private SmsTwilio smsTwilio;
 
     @InjectMocks
     private NotificationServiceImpl notificationService;
@@ -68,18 +68,18 @@ class NotificationServiceImplTest {
                 eq("Suscripción a Fondo - BTG Pactual"),
                 eq(mensajeEsperado)
         );
-        verify(smsInfobip, never()).enviarSms(anyString(), anyString());
+        verify(smsTwilio, never()).enviarSms(anyString(), anyString());
     }
 
     @Test
     void enviarNotificacionSuscripcion_DeberiaEnviarSms_CuandoPreferenciaEsSms() {
 
         cliente.setPreferenciaNotificacion(PreferenciaNotificacion.SMS);
-        doNothing().when(smsInfobip).enviarSms(anyString(), anyString());
+        doNothing().when(smsTwilio).enviarSms(anyString(), anyString());
 
         notificationService.enviarNotificacionSuscripcion(cliente, fondo);
 
-        verify(smsInfobip).enviarSms(
+        verify(smsTwilio).enviarSms(
                 eq(cliente.getTelefono()),
                 eq(mensajeEsperado)
         );
@@ -93,7 +93,7 @@ class NotificationServiceImplTest {
         notificationService.enviarNotificacionSuscripcion(cliente, fondo);
 
         verify(enviarEmail, never()).enviarEmail(anyString(), anyString(), anyString());
-        verify(smsInfobip, never()).enviarSms(anyString(), anyString());
+        verify(smsTwilio, never()).enviarSms(anyString(), anyString());
     }
 
     @Test
@@ -120,7 +120,7 @@ class NotificationServiceImplTest {
 
         cliente.setPreferenciaNotificacion(PreferenciaNotificacion.SMS);
         RuntimeException excepcionEsperada = new RuntimeException("Error al enviar SMS");
-        doThrow(excepcionEsperada).when(smsInfobip).enviarSms(anyString(), anyString());
+        doThrow(excepcionEsperada).when(smsTwilio).enviarSms(anyString(), anyString());
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
@@ -128,7 +128,7 @@ class NotificationServiceImplTest {
         );
 
         assertEquals("Error al enviar SMS", exception.getMessage());
-        verify(smsInfobip).enviarSms(
+        verify(smsTwilio).enviarSms(
                 eq(cliente.getTelefono()),
                 eq(mensajeEsperado)
         );
@@ -196,7 +196,7 @@ class NotificationServiceImplTest {
 
         notificationService.enviarNotificacionSuscripcion(cliente, fondoEspecifico);
 
-        verify(smsInfobip).enviarSms(
+        verify(smsTwilio).enviarSms(
                 eq("3009876543"),
                 eq(mensajeEspecifico)
         );

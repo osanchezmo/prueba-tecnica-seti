@@ -4,7 +4,7 @@ import com.btg.prueba_tecnica_seti.entity.Cliente;
 import com.btg.prueba_tecnica_seti.repository.ClienteRepository;
 import com.btg.prueba_tecnica_seti.service.impl.NotificationService;
 import com.btg.prueba_tecnica_seti.utils.Constantes;
-import com.btg.prueba_tecnica_seti.utils.SmsInfobip;
+import com.btg.prueba_tecnica_seti.utils.SmsTwilio;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ public class ClienteControllerTest {
     private NotificationService notificationService;
 
     @MockitoBean
-    private SmsInfobip smsInfobip;
+    private SmsTwilio smsTwilio;
 
     @Autowired
     private MockMvc mockMvc;

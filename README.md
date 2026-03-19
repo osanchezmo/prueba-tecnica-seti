@@ -161,7 +161,15 @@ erDiagram
 > [!TIP]
 > Endpoints protegidos: `Authorization: Bearer <token>`
 
-**Fondos disponibles:** 1-5 (FPV_BTG_PACTUAL_RECAUDADORA, FPV_BTG_PACTUAL_ECOPETROL, DEUDAPRIVADA, FDO-ACCIONES, FPV_BTG_PACTUAL_DINAMICA)
+**Fondos disponibles:**
+
+| ID | Nombre | Monto mínimo | Categoría |
+|----|--------|--------------|-----------|
+| 1 | FPV_BTG_PACTUAL_RECAUDADORA | $75.000 COP | FPV |
+| 2 | FPV_BTG_PACTUAL_ECOPETROL | $125.000 COP | FPV |
+| 3 | DEUDAPRIVADA | $50.000 COP | FIC |
+| 4 | FDO-ACCIONES | $250.000 COP | FIC |
+| 5 | FPV_BTG_PACTUAL_DINAMICA | $100.000 COP | FPV |
 
 ---
 
@@ -296,3 +304,4 @@ src/main/java/com/btg/prueba_tecnica_seti/
 > [!NOTE]
 > - Se inicializan **5 fondos predefinidos** automáticamente al arrancar.
 > - El saldo inicial de cada nuevo cliente es de **$500.000 COP**.
+> - Las notificaciones de suscripción usan **Email** (SMTP) y **SMS** (Twilio). Configurar en `application.properties`.

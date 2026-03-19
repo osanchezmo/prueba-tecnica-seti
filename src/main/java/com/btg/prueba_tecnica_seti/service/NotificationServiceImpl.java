@@ -5,7 +5,7 @@ import com.btg.prueba_tecnica_seti.entity.Fondo;
 import com.btg.prueba_tecnica_seti.enums.PreferenciaNotificacion;
 import com.btg.prueba_tecnica_seti.service.impl.NotificationService;
 import com.btg.prueba_tecnica_seti.utils.EnviarEmail;
-import com.btg.prueba_tecnica_seti.utils.SmsInfobip;
+import com.btg.prueba_tecnica_seti.utils.SmsTwilio;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class NotificationServiceImpl implements NotificationService {
 
     private final EnviarEmail enviarEmail;
-    private final SmsInfobip smsInfobip;
+    private final SmsTwilio smsTwilio;
 
     @Override
     public void enviarNotificacionSuscripcion(Cliente cliente, Fondo fondo) {
@@ -32,7 +32,7 @@ public class NotificationServiceImpl implements NotificationService {
             if (cliente.getPreferenciaNotificacion() == PreferenciaNotificacion.EMAIL) {
                 enviarEmail.enviarEmail(cliente.getEmail(), "Suscripción a Fondo - BTG Pactual", mensaje);
             } else if (cliente.getPreferenciaNotificacion() == PreferenciaNotificacion.SMS) {
-                smsInfobip.enviarSms(cliente.getTelefono(), mensaje);
+                smsTwilio.enviarSms(cliente.getTelefono(), mensaje);
             }
 
             log.info("Notificación enviada exitosamente");
