@@ -1,24 +1,48 @@
 # Prueba Técnica SETI - Backend
 
-API REST para la gestión de fondos de inversión. Este proyecto está dividido en dos partes según la especificación técnica (`prueba_tecnica_back_end 4.pdf`). **Esta documentación cubre únicamente la Parte 1.**
+API REST para la gestión de fondos de inversión. Este proyecto está dividido en dos partes según la especificación técnica (`prueba_tecnica_back_end 4.pdf`).
 
 Los requisitos y endpoints están definidos en el documento técnico y en la colección Postman incluida en el repositorio.
 
 ## Contenido
 
-- [Descripción](#descripción)
-- [Arquitectura](#arquitectura)
+- [Base de datos (opcional)](#base-de-datos-opcional)
 - [Requisitos previos](#requisitos-previos)
+- [Parte 1 - API Fondos](#parte-1---api-fondos)
+- [Parte 2 - Consulta SQL](#parte-2---consulta-sql)
 - [Puesta en marcha](#puesta-en-marcha)
-- [Probar la API](#probar-la-api)
-- [Referencia API](#referencia-api)
 - [Estructura del proyecto](#estructura-del-proyecto)
 
 ---
 
-## Descripción
+## Base de datos (opcional)
 
-La **Parte 1** implementa un sistema de gestión de fondos de inversión:
+> [!NOTE]
+> El `docker-compose.yml` es **opcional** y sirve para **ambas partes**. Solo es necesario si no tienes MongoDB ni PostgreSQL instalados localmente. Si ya los tienes configurados, omite este paso.
+>
+> - **Parte 1:** MongoDB en `localhost:27017` (usuario: `btg_siti`, contraseña: `siti123`, base: `btg_fondos`)
+> - **Parte 2:** PostgreSQL en `localhost:5432` (usuario: `admin`, contraseña: `admin123`, base: `btg`)
+
+```bash
+docker-compose up -d
+```
+
+---
+
+## Requisitos previos
+
+- Java 17+
+- Maven 3.6+ (o Maven Wrapper `./mvnw`)
+- MongoDB (local o remoto) — Parte 1
+- PostgreSQL (local o remoto) — Parte 2
+
+---
+
+## Parte 1 - API Fondos
+
+### Descripción
+
+Sistema de gestión de fondos de inversión:
 
 | Funcionalidad | Descripción |
 |---------------|-------------|
@@ -29,11 +53,7 @@ La **Parte 1** implementa un sistema de gestión de fondos de inversión:
 
 **Stack:** Java 17 · Spring Boot 3.4.3 · MongoDB 6 · Maven
 
----
-
-## Arquitectura
-
-### Diagrama de arquitectura
+### Arquitectura
 
 ```mermaid
 flowchart TB
@@ -121,80 +141,14 @@ erDiagram
     }
 ```
 
----
+### Solución Parte 1
 
-## Requisitos previos
+**Probar la API:** Crear cliente → Login → Suscribir a fondo
 
-- Java 17+
-- Maven 3.6+
-- MongoDB (local o remoto)
+- **Swagger UI:** http://localhost:8080/
+- **Postman:** Importar `BTG Fondos API.postman_collection.json`
 
----
-
-## Puesta en marcha
-
-### 1. Base de datos (opcional)
-
-> [!NOTE]
-> El `docker-compose.yml` es **opcional**. Solo es necesario si no tienes MongoDB instalado localmente. Si ya lo tienes configurado, omite este paso y ajusta las credenciales en `application.properties`.
-
-```bash
-docker-compose up -d
-```
-
-MongoDB quedará en `localhost:27017` (usuario: `btg_siti`, contraseña: `siti123`, base: `btg_fondos`).
-
-### 2. Ejecutar la aplicación
-
-```bash
-mvn clean install
-mvn spring-boot:run
-```
-
-Aplicación disponible en `http://localhost:8080`.
-
-### 3. Ejecutar tests
-
-```bash
-mvn test
-```
-
-El proyecto incluye tests unitarios (services) y de integración (controllers).
-
----
-
-## Probar la API
-
-> [!TIP]
-> Sigue este flujo para validar la solución: **Crear cliente** → **Login** → **Suscribir a fondo**.
-
-### Opción A: Swagger UI
-
-Documentación interactiva disponible en http://localhost:8080/
-
-### Opción B: Postman
-
-El proyecto incluye la colección **BTG Fondos API.postman_collection.json** (requisito del documento técnico).
-
-1. **Importar:** Postman → File → Import → Seleccionar `BTG Fondos API.postman_collection.json`
-2. **Variables:** `baseUrl` (http://localhost:8080), `token` y `clienteId` se gestionan automáticamente
-3. **Flujo:** Crear cliente → Login → Los endpoints protegidos usan el token automáticamente
-
-### Fondos disponibles
-
-| ID | Fondo | Monto mínimo |
-|----|-------|--------------|
-| 1 | FPV_BTG_PACTUAL_RECAUDADORA | $75.000 COP |
-| 2 | FPV_BTG_PACTUAL_ECOPETROL | $125.000 COP |
-| 3 | DEUDAPRIVADA | $50.000 COP |
-| 4 | FDO-ACCIONES | $250.000 COP |
-| 5 | FPV_BTG_PACTUAL_DINAMICA | $100.000 COP |
-
----
-
-## Referencia API
-
-### Endpoints
+**Endpoints:**
 
 | Método | Endpoint | Descripción | Auth |
 |--------|----------|-------------|------|
@@ -204,19 +158,121 @@ El proyecto incluye la colección **BTG Fondos API.postman_collection.json** (re
 | POST | `/api/fondos/cancelar` | Cancelar suscripción | JWT |
 | GET | `/api/clientes/{id}/transacciones` | Historial de transacciones | JWT |
 
-### Autenticación
-
 > [!TIP]
-> Para endpoints protegidos, incluye el token en el header:
+> Endpoints protegidos: `Authorization: Bearer <token>`
 
+**Fondos disponibles:** 1-5 (FPV_BTG_PACTUAL_RECAUDADORA, FPV_BTG_PACTUAL_ECOPETROL, DEUDAPRIVADA, FDO-ACCIONES, FPV_BTG_PACTUAL_DINAMICA)
+
+---
+
+## Parte 2 - Consulta SQL
+
+### Descripción
+
+Consulta SQL para obtener clientes inscritos en productos que solo están disponibles en una sucursal y que visitan esa sucursal.
+
+### Modelo de datos
+
+```mermaid
+erDiagram
+    CLIENTE ||--o{ INSCRIPCION : tiene
+    PRODUCTO ||--o{ INSCRIPCION : "inscritos en"
+    SUCURSAL ||--o{ DISPONIBILIDAD : "ofrece"
+    PRODUCTO ||--o{ DISPONIBILIDAD : "disponible en"
+    SUCURSAL ||--o{ VISITAN : "visitada por"
+    CLIENTE ||--o{ VISITAN : visita
+
+    CLIENTE {
+        int id PK
+        string nombre
+        string apellidos
+        string ciudad
+    }
+
+    SUCURSAL {
+        int id PK
+        string nombre
+        string ciudad
+    }
+
+    PRODUCTO {
+        int id PK
+        string nombre
+        string tipoProducto
+    }
+
+    INSCRIPCION {
+        int idProducto FK
+        int idCliente FK
+    }
+
+    DISPONIBILIDAD {
+        int idSucursal FK
+        int idProducto FK
+    }
+
+    VISITAN {
+        int idSucursal FK
+        int idCliente FK
+        date fechaVisita
+    }
 ```
-Authorization: Bearer <token>
+
+### Solución Parte 2
+
+> [!IMPORTANT]
+> **Ejecutar el archivo SQL primero** para crear el esquema y cargar los datos (`parte-2-schema-data.sql`).
+
+**Con Docker Compose:**
+```bash
+docker exec -i postgres_db psql -U admin -d btg < parte-2-schema-data.sql
 ```
 
-### Roles
+**Con PostgreSQL local:**
+```bash
+psql -U admin -d btg -h localhost -f parte-2-schema-data.sql
+```
 
-- **CLIENTE:** Solo puede acceder a sus propios datos.
-- **ADMIN:** Acceso completo.
+O desde pgAdmin/DBeaver: ejecutar el contenido de `parte-2-schema-data.sql` en la base `btg`.
+
+**Consulta SQL:**
+
+```sql
+SELECT DISTINCT C.nombre
+FROM cliente AS C
+JOIN inscripcion AS i ON c.id = i.idCliente
+JOIN disponibilidad AS d ON i.idProducto = d.idProducto
+JOIN visitan AS v ON v.idSucursal = d.idSucursal AND v.idCliente = c.id
+WHERE i.idProducto IN (
+    SELECT idProducto
+    FROM disponibilidad
+    GROUP BY idProducto
+    HAVING COUNT(idSucursal) = 1
+);
+```
+
+---
+
+## Puesta en marcha
+
+### Parte 1 — Ejecutar aplicación
+
+```bash
+./mvnw clean install
+./mvnw spring-boot:run
+```
+
+Aplicación en `http://localhost:8080`
+
+### Parte 1 — Tests
+
+```bash
+./mvnw test
+```
+
+### Parte 2 — Ejecutar esquema SQL
+
+Ver comandos en [Solución Parte 2](#solución-parte-2).
 
 ---
 
